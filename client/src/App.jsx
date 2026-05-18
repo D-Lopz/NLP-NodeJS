@@ -1,13 +1,17 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
 import Homepage from "./pages/Homepage";
-import TaskForm from "./pages/TaskForm";
+import EvaluationForm from "./pages/EvaluationForm";
+import Docentes from "./pages/Docentes";
 
 function App() {
   return (
     <BrowserRouter>
+      <Navbar />
       <Routes>
         <Route path="/" element={<Homepage />} />
-        <Route path="/task/new" element={<TaskForm />} />
+        <Route path="/evaluar" element={<EvaluationForm />} />
+        <Route path="/docentes" element={<Docentes />} />
       </Routes>
     </BrowserRouter>
   );
