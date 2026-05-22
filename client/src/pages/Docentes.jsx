@@ -11,7 +11,7 @@ function ScoreRing({ score }) {
   const dash        = (pct / 100) * circumference;
 
   return (
-    <div className="relative w-12 h-12 flex-shrink-0">
+    <div className="relative w-12 h-12 shrink-0">
       <svg viewBox="0 0 44 44" className="w-full h-full -rotate-90">
         <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="4" />
         <circle cx="22" cy="22" r="18" fill="none" stroke={color} strokeWidth="4"
@@ -114,7 +114,7 @@ function Docentes() {
                 className="rounded-xl border border-white/8 p-4 flex items-center gap-4 hover:border-white/15 transition-all duration-200"
                 style={{ background: "rgba(255,255,255,0.02)" }}
               >
-                <span className="text-xs font-mono text-white/20 w-5 text-center flex-shrink-0">{i + 1}</span>
+                <span className="text-xs font-mono text-white/20 w-5 text-center shrink-0">{i + 1}</span>
 
                 <ScoreRing score={score} />
 
