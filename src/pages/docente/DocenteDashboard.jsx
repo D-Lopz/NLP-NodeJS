@@ -61,7 +61,7 @@ function DocenteDashboard() {
 
       <div className="p-8 max-w-4xl mx-auto">
         <div className="mb-8">
-          <p className="font-mono text-xs text-violet-400 tracking-widest uppercase mb-2">◈ Mi panel</p>
+          <p className="font-mono text-xs text-violet-400 tracking-widest uppercase mb-2">◈ Mi Panel</p>
           <h1 className="text-2xl font-bold text-white">
             {docente ? docente.nombre : "Dashboard docente"}
           </h1>
