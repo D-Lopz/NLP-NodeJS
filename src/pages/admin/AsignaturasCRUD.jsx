@@ -136,7 +136,7 @@ function AsignaturasCRUD() {
           {filtradas.map((a) => (
             <div key={a._id} className="rounded-xl border border-white/8 p-4 flex items-center gap-4 hover:border-white/15 transition-all"
               style={{ background: "rgba(255,255,255,0.02)" }}>
-              <div className="w-8 h-8 rounded-lg bg-amber-500/15 text-amber-400 flex items-center justify-center text-xs font-mono flex-shrink-0 font-bold">
+              <div className="w-8 h-8 rounded-lg bg-amber-500/15 text-amber-400 flex items-center justify-center text-xs font-mono shrink-0 font-bold">
                 {a.creditos || "?"}
               </div>
               <div className="flex-1 min-w-0">

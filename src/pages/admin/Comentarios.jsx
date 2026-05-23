@@ -106,7 +106,7 @@ function Comentarios() {
                   )}
                   <SentimentBadge sentiment={ev.nlp?.sentiment} score={ev.nlp?.score} />
                 </div>
-                <span className="text-xs text-white/25 font-mono flex-shrink-0">
+                <span className="text-xs text-white/25 font-mono shrink-0">
                   {new Date(ev.createdAt).toLocaleDateString("es-CO")}
                 </span>
               </div>
