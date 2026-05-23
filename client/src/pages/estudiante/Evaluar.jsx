@@ -1,0 +1,170 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import SentimentBadge from "../../components/SentimentBadge";
+import { useAuth } from "../../context/AuthContext";
+import { getDocentes, crearEvaluacion } from "../../api/api";
+
+const MAX_CHARS = 500;
+
+// Detecta si el texto parece sin sentido
+function esTextoValido(texto) {
+  const palabras = texto.trim().split(/\s+/);
+  if (palabras.length < 5) return false;
+  const letras = texto.replace(/[^a-záéíóúüñ]/gi, "");
+  const vocales = letras.replace(/[^aeiouáéíóú]/gi, "");
+  // Al menos 20% de vocales del total de letras
+  if (letras.length > 0 && vocales.length / letras.length < 0.2) return false;
+  // Ninguna "palabra" mayor a 15 chars sin vocal
+  const tieneRuido = palabras.some(p => p.length > 10 && !/[aeiouáéíóú]/i.test(p));
+  return !tieneRuido;
+}
+
+function Evaluar() {
+  const { user, cerrarSesion } = useAuth();
+  const navigate = useNavigate();
+  const [docentes, setDocentes]     = useState([]);
+  const [docenteId, setDocenteId]   = useState("");
+  const [comentario, setComentario] = useState("");
+  const [loading, setLoading]       = useState(false);
+  const [loadingDocs, setLoadingDocs] = useState(true);
+  const [result, setResult]         = useState(null);
+  const [error, setError]           = useState("");
+
+  useEffect(() => {
+    getDocentes().then(setDocentes).catch(console.error).finally(() => setLoadingDocs(false));
+  }, []);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError("");
+    if (!docenteId) { setError("Selecciona un docente."); return; }
+    if (comentario.trim().length < 10) { setError("El comentario debe tener al menos 10 caracteres."); return; }
+    if (!esTextoValido(comentario)) {
+      setError("Por favor escribe un comentario coherente sobre el docente. Evita escribir texto sin sentido.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const data = await crearEvaluacion({ docenteId, comentario });
+      setResult(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handleReset() { setResult(null); setComentario(""); setDocenteId(""); setError(""); }
+  function handleLogout() { cerrarSesion(); navigate("/login"); }
+
+  const charsLeft = MAX_CHARS - comentario.length;
+
+  return (
+    <div className="min-h-screen" style={{ background: "#141414" }}>
+      {/* Header */}
+      <header className="border-b border-white/8 px-6 py-4 flex items-center justify-between"
+        style={{ background: "rgba(255,255,255,0.015)", backdropFilter: "blur(12px)" }}>
+        <div className="flex items-center gap-2">
+          <span className="text-violet-400">⬡</span>
+          <span className="font-mono text-sm font-bold tracking-widest text-white">
+            NLP<span className="text-violet-400">·</span>EVAL
+          </span>
+          <span className="text-white/20 mx-2">|</span>
+          <span className="text-xs text-white/40 uppercase tracking-widest">Estudiante</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-white/60">{user?.nombre}</span>
+          <button onClick={handleLogout} className="text-xs text-white/30 hover:text-rose-400 transition-colors">⏻ Salir</button>
+        </div>
+      </header>
+
+      <div className="pt-10 pb-12 px-6 max-w-xl mx-auto">
+        <div className="mb-8">
+          <p className="font-mono text-xs text-violet-400 tracking-widest uppercase mb-2">✦ Evaluación</p>
+          <h1 className="text-2xl font-bold text-white">Evaluar docente</h1>
+          <p className="text-white/40 mt-1 text-sm">
+            Tu evaluación es <span className="text-white/60">completamente anónima</span>. Sé honesto y constructivo.
+          </p>
+        </div>
+
+        {!result ? (
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            {/* Docente */}
+            <div>
+              <label className="block text-xs text-white/40 uppercase tracking-widest mb-2">Docente</label>
+              {loadingDocs ? (
+                <div className="h-12 rounded-xl bg-white/4 border border-white/10 animate-pulse" />
+              ) : (
+                <select value={docenteId} onChange={(e) => setDocenteId(e.target.value)}
+                  className="w-full rounded-xl border border-white/10 bg-white/4 text-white px-4 py-3 text-sm focus:outline-none focus:border-violet-500/60 transition-all appearance-none cursor-pointer">
+                  <option value="" disabled className="bg-zinc-900">Selecciona un docente...</option>
+                  {docentes.map((d) => (
+                    <option key={d._id} value={d._id} className="bg-zinc-900">{d.nombre} — {d.materia}</option>
+                  ))}
+                </select>
+              )}
+            </div>
+
+            {/* Comentario */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-xs text-white/40 uppercase tracking-widest">Tu comentario</label>
+                <span className={`text-xs font-mono ${charsLeft < 50 ? "text-rose-400" : "text-white/25"}`}>
+                  {charsLeft} restantes
+                </span>
+              </div>
+              <textarea value={comentario}
+                onChange={(e) => setComentario(e.target.value.slice(0, MAX_CHARS))}
+                rows={5} placeholder="Describe tu experiencia con este docente. ¿Cómo son sus clases? ¿Explica bien? ¿Es accesible?"
+                className="w-full rounded-xl border border-white/10 bg-white/4 text-white px-4 py-3 text-sm resize-none focus:outline-none focus:border-violet-500/60 transition-all placeholder:text-white/20" />
+              <p className="text-xs text-white/25 mt-1.5">
+                💡 Escribe al menos 5 palabras describiendo tu experiencia real con el docente.
+              </p>
+            </div>
+
+            {error && (
+              <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-rose-400 text-sm">{error}</div>
+            )}
+
+            <button type="submit"
+              disabled={loading || !docenteId || comentario.trim().length < 10}
+              className="w-full rounded-xl py-3.5 text-sm font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed bg-violet-600 hover:bg-violet-500 text-white flex items-center justify-center gap-2">
+              {loading
+                ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Enviando evaluación...</>
+                : "Enviar Evaluación"}
+            </button>
+          </form>
+        ) : (
+          /* Confirmación */
+          <div className="flex flex-col gap-4">
+            <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-6 text-center">
+              <div className="text-3xl mb-3">✓</div>
+              <h2 className="text-white font-semibold text-lg mb-1">¡Evaluación enviada!</h2>
+              <p className="text-white/45 text-sm">Tu comentario fue registrado de forma anónima.</p>
+            </div>
+
+            <div className="rounded-xl border border-white/8 p-4" style={{ background: "rgba(255,255,255,0.02)" }}>
+              <p className="text-xs text-white/30 uppercase tracking-widest mb-3">Análisis de tu comentario</p>
+              <div className="flex items-center gap-3 mb-3">
+                <SentimentBadge sentiment={result.nlp?.sentiment} score={result.nlp?.score} />
+                <span className="text-xs font-mono text-white/40">
+                  Confianza: {((result.nlp?.confianza ?? 0)*100).toFixed(0)}%
+                </span>
+              </div>
+              {result.nlp?.razon && (
+                <p className="text-xs text-white/40 italic">"{result.nlp.razon}"</p>
+              )}
+            </div>
+
+            <button onClick={handleReset}
+              className="w-full rounded-xl py-3 text-sm font-semibold border border-white/10 text-white/60 hover:text-white hover:border-white/20 transition-all">
+              Enviar otra evaluación
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default Evaluar;
