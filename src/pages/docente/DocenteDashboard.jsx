@@ -3,22 +3,23 @@ import { useNavigate } from "react-router-dom";
 import SentimentBadge from "../../components/SentimentBadge";
 import { useAuth } from "../../context/AuthContext";
 import { getDocentes, getEvaluacionesByDocente } from "../../api/api";
+import { generarReporteDocente } from "../../utils/generarReporte";
 
 function DocenteDashboard() {
   const { user, cerrarSesion } = useAuth();
   const navigate = useNavigate();
-  const [docente, setDocente]       = useState(null);
+  const [docente, setDocente]           = useState(null);
   const [evaluaciones, setEvaluaciones] = useState([]);
-  const [loading, setLoading]       = useState(true);
-  const [error, setError]           = useState("");
+  const [loading, setLoading]           = useState(true);
+  const [generando, setGenerando]       = useState(false);
+  const [error, setError]               = useState("");
 
   useEffect(() => {
-    // Buscar el perfil de docente que coincide con el nombre del usuario
     getDocentes()
       .then((docs) => {
         const match = docs.find(d =>
-          d.nombre.toLowerCase().includes(user?.nombre?.toLowerCase()) ||
-          user?.nombre?.toLowerCase().includes(d.nombre.toLowerCase())
+          d.nombre?.toLowerCase().includes(user?.nombre?.toLowerCase()) ||
+          user?.nombre?.toLowerCase().includes(d.nombre?.toLowerCase())
         );
         if (!match) { setError("No se encontró tu perfil de docente. Contacta al administrador."); setLoading(false); return; }
         setDocente(match);
@@ -29,19 +30,31 @@ function DocenteDashboard() {
       .finally(() => setLoading(false));
   }, []);
 
+  async function handleReporte() {
+    if (!docente) return;
+    setGenerando(true);
+    try {
+      generarReporteDocente(docente, evaluaciones);
+    } catch (err) {
+      alert("Error al generar el reporte: " + err.message);
+    } finally {
+      setGenerando(false);
+    }
+  }
+
   function handleLogout() { cerrarSesion(); navigate("/login"); }
 
-  const pos  = evaluaciones.filter(e => e.nlp?.sentiment === "positivo").length;
-  const neg  = evaluaciones.filter(e => e.nlp?.sentiment === "negativo").length;
-  const neu  = evaluaciones.filter(e => e.nlp?.sentiment === "neutro").length;
   const total = evaluaciones.length;
+  const pos   = evaluaciones.filter(e => e.nlp?.sentiment === "positivo").length;
+  const neg   = evaluaciones.filter(e => e.nlp?.sentiment === "negativo").length;
+  const neu   = evaluaciones.filter(e => e.nlp?.sentiment === "neutro").length;
   const scorePromedio = total > 0
     ? (evaluaciones.reduce((a, e) => a + (e.nlp?.score ?? 0), 0) / total).toFixed(3)
     : "—";
 
   return (
     <div className="min-h-screen" style={{ background: "#141414" }}>
-      {/* Top bar */}
+      {/* Header */}
       <header className="border-b border-white/8 px-6 py-4 flex items-center justify-between"
         style={{ background: "rgba(255,255,255,0.015)", backdropFilter: "blur(12px)" }}>
         <div className="flex items-center gap-2">
@@ -52,20 +65,26 @@ function DocenteDashboard() {
           <span className="text-white/20 mx-2">|</span>
           <span className="text-xs text-white/40 uppercase tracking-widest">Docente</span>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-white/60">{user?.nombre}</span>
-          <button onClick={handleLogout}
-            className="text-xs text-white/30 hover:text-rose-400 transition-colors">⏻ Salir</button>
+        <div className="flex items-center gap-3">
+          {/* Botón descargar reporte */}
+          {docente && !loading && (
+            <button onClick={handleReporte} disabled={generando}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-violet-500/40 text-violet-400 text-xs font-semibold hover:bg-violet-500/15 hover:border-violet-500/60 transition-all disabled:opacity-40">
+              {generando
+                ? <><span className="w-3 h-3 border border-violet-400/50 border-t-violet-400 rounded-full animate-spin"/>Generando...</>
+                : <>⬇ Descargar mi reporte PDF</>}
+            </button>
+          )}
+          <span className="text-sm text-white/50">{user?.nombre}</span>
+          <button onClick={handleLogout} className="text-xs text-white/30 hover:text-rose-400 transition-colors">⏻ Salir</button>
         </div>
       </header>
 
       <div className="p-8 max-w-4xl mx-auto">
         <div className="mb-8">
-          <p className="font-mono text-xs text-violet-400 tracking-widest uppercase mb-2">◈ Mi Panel</p>
-          <h1 className="text-2xl font-bold text-white">
-            {docente ? docente.nombre : "Dashboard docente"}
-          </h1>
-          {docente && <p className="text-white/40 text-sm mt-1">{docente.materia}{docente.departamento ? ` · ${docente.departamento}` : ""}</p>}
+          <p className="font-mono text-xs text-violet-400 tracking-widest uppercase mb-2">◈ Mi panel</p>
+          <h1 className="text-2xl font-bold text-white">{docente ? docente.nombre : "Dashboard docente"}</h1>
+          {docente?.docente?.titulo && <p className="text-white/40 text-sm mt-1">{docente.docente.titulo}</p>}
         </div>
 
         {error && (
@@ -74,8 +93,8 @@ function DocenteDashboard() {
 
         {loading ? (
           <div className="flex flex-col gap-3">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-24 rounded-xl border border-white/8 animate-pulse" style={{ background: "rgba(255,255,255,0.02)" }} />
+            {[...Array(3)].map((_,i)=>(
+              <div key={i} className="h-24 rounded-xl border border-white/8 animate-pulse" style={{background:"rgba(255,255,255,0.02)"}} />
             ))}
           </div>
         ) : docente && (
@@ -83,10 +102,10 @@ function DocenteDashboard() {
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
               {[
-                { label: "Total", value: total, accent: "text-violet-400", icon: "◈" },
-                { label: "Positivos", value: pos, accent: "text-emerald-400", icon: "↑" },
-                { label: "Negativos", value: neg, accent: "text-rose-400", icon: "↓" },
-                { label: "Score prom.", value: scorePromedio, accent: "text-sky-400", icon: "≈" },
+                { label: "Total",      value: total,         accent: "text-violet-400", icon: "◈" },
+                { label: "Positivos",  value: pos,           accent: "text-emerald-400",icon: "↑" },
+                { label: "Negativos",  value: neg,           accent: "text-rose-400",   icon: "↓" },
+                { label: "Score prom.",value: scorePromedio, accent: "text-sky-400",    icon: "≈" },
               ].map(({ label, value, accent, icon }) => (
                 <div key={label} className="rounded-xl border border-white/8 p-4 relative overflow-hidden"
                   style={{ background: "rgba(255,255,255,0.03)" }}>
@@ -97,7 +116,7 @@ function DocenteDashboard() {
               ))}
             </div>
 
-            {/* Distribution bar */}
+            {/* Barra distribución */}
             {total > 0 && (
               <div className="rounded-xl border border-white/8 p-5 mb-8" style={{ background: "rgba(255,255,255,0.03)" }}>
                 <p className="text-xs text-white/40 uppercase tracking-widest mb-3">Distribución de sentimientos</p>
@@ -114,11 +133,8 @@ function DocenteDashboard() {
               </div>
             )}
 
-            {/* Comments */}
-            <p className="text-xs text-white/40 uppercase tracking-widest mb-4">
-              Comentarios anónimos recibidos ({total})
-            </p>
-
+            {/* Comentarios */}
+            <p className="text-xs text-white/40 uppercase tracking-widest mb-4">Comentarios anónimos ({total})</p>
             {total === 0 ? (
               <p className="text-center py-10 text-white/30 text-sm">Aún no has recibido evaluaciones.</p>
             ) : (
@@ -134,9 +150,7 @@ function DocenteDashboard() {
                     </div>
                     <p className="text-sm text-white/65 leading-relaxed">{ev.comentario}</p>
                     {ev.nlp?.razon && (
-                      <p className="text-xs text-white/25 italic mt-2 border-t border-white/6 pt-2">
-                        "{ev.nlp.razon}"
-                      </p>
+                      <p className="text-xs text-white/25 italic mt-2 border-t border-white/6 pt-2">"{ev.nlp.razon}"</p>
                     )}
                   </div>
                 ))}
