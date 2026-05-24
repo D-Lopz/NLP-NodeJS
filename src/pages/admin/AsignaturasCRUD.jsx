@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
 import { getAsignaturas, crearAsignatura, actualizarAsignatura, eliminarAsignatura, getDocentes } from "../../api/api";
+import { useState, useEffect } from "react";
 
 function Modal({ asignatura, docentes, onClose, onSave }) {
   const [form, setForm] = useState(asignatura
     ? { nombre_asignatura: asignatura.nombre_asignatura || "", creditos: asignatura.creditos || "", nombre_docente: asignatura.nombre_docente || "" }
     : { nombre_asignatura: "", creditos: "", nombre_docente: "" });
+
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState("");
   const isEdit = !!asignatura?._id;
@@ -109,13 +110,13 @@ function AsignaturasCRUD() {
 
       <div className="flex items-start justify-between mb-8">
         <div>
-          <p className="font-mono text-xs text-violet-400 tracking-widest uppercase mb-2">◫ CRUD</p>
-          <h1 className="text-2xl font-bold text-white">Asignaturas</h1>
-          <p className="text-white/40 text-sm mt-1">Gestión del catálogo de materias.</p>
+          <p className="font-mono text-xs text-violet-400 tracking-widest uppercase mb-2">◫ Asignaturas</p>
+          <h1 className="text-2xl font-bold text-white">Catálogo de Materias    </h1>
+          <p className="text-white/40 text-sm mt-1">Gestión y administración de los contenidos en planes de estudio.</p>
         </div>
         <button onClick={() => setModal("new")}
           className="rounded-xl bg-violet-600 hover:bg-violet-500 text-white px-4 py-2.5 text-sm font-semibold transition-all">
-          + Nueva asignatura
+          + Nueva Asignatura
         </button>
       </div>
 

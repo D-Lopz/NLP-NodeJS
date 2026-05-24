@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
 import { getDocentes, crearDocente, actualizarDocente, eliminarDocente } from "../../api/api";
+import { useState, useEffect } from "react";
 
 const EMPTY = { nombre: "", materia: "", departamento: "" };
 
 function Modal({ docente, onClose, onSave }) {
-  const [form, setForm] = useState(docente || EMPTY);
+  const [form, setForm]       = useState(docente || EMPTY);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError]     = useState("");
   const isEdit = !!docente?._id;
 
   async function handleSubmit(e) {
@@ -25,7 +25,7 @@ function Modal({ docente, onClose, onSave }) {
       <div className="w-full max-w-md rounded-2xl border border-white/12 p-6"
         style={{ background: "#1c1c1c" }}>
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-white font-semibold">{isEdit ? "Editar docente" : "Nuevo docente"}</h2>
+          <h2 className="text-white font-semibold">{isEdit ? "Editar Docente" : "Nuevo Docente"}</h2>
           <button onClick={onClose} className="text-white/30 hover:text-white/70 transition-colors text-lg">✕</button>
         </div>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -59,7 +59,7 @@ function Modal({ docente, onClose, onSave }) {
 function DocentesCRUD() {
   const [docentes, setDocentes] = useState([]);
   const [loading, setLoading]   = useState(true);
-  const [modal, setModal]       = useState(null); // null | "new" | docente obj
+  const [modal, setModal]       = useState(null);
   const [search, setSearch]     = useState("");
 
   const cargar = () => {
@@ -92,13 +92,13 @@ function DocentesCRUD() {
 
       <div className="flex items-start justify-between mb-8">
         <div>
-          <p className="font-mono text-xs text-violet-400 tracking-widest uppercase mb-2">◉ CRUD</p>
-          <h1 className="text-2xl font-bold text-white">Docentes</h1>
-          <p className="text-white/40 text-sm mt-1">Gestión del catálogo de docentes.</p>
+          <p className="font-mono text-xs text-violet-400 tracking-widest uppercase mb-2">◉ Docentes</p>
+          <h1 className="text-2xl font-bold text-white">Catálogo Académico</h1>
+          <p className="text-white/40 text-sm mt-1">Gestiona perfiles, materias y actividad docente.</p>
         </div>
         <button onClick={() => setModal("new")}
           className="rounded-xl bg-violet-600 hover:bg-violet-500 text-white px-4 py-2.5 text-sm font-semibold transition-all">
-          + Nuevo docente
+          + Nuevo Docente
         </button>
       </div>
 

@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
 import { getEstudiantes, crearEstudiante, actualizarEstudiante, eliminarEstudiante, getAsignaturas } from "../../api/api";
+import { useState, useEffect } from "react";
 
 function Modal({ estudiante, asignaturas, onClose, onSave }) {
   const [form, setForm] = useState(estudiante ? {
@@ -10,6 +10,7 @@ function Modal({ estudiante, asignaturas, onClose, onSave }) {
     estado: estudiante.estudiante?.estado || "Activo",
     contrasena: "",
     asignaturas_ids: estudiante.estudiante?.asignaturas || [],
+    
   } : { nombre: "", email: "", codigo: "", telefono: "", estado: "Activo", contrasena: "", asignaturas_ids: [] });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -101,9 +102,9 @@ function Modal({ estudiante, asignaturas, onClose, onSave }) {
 function EstudiantesCRUD() {
   const [estudiantes, setEstudiantes] = useState([]);
   const [asignaturas, setAsignaturas] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [modal, setModal] = useState(null);
-  const [search, setSearch] = useState("");
+  const [loading, setLoading]         = useState(true);
+  const [modal, setModal]             = useState(null);
+  const [search, setSearch]           = useState("");
 
   const cargar = () => {
     setLoading(true);
@@ -132,11 +133,11 @@ function EstudiantesCRUD() {
       {modal!==null && <Modal estudiante={modal==="new"?null:modal} asignaturas={asignaturas} onClose={()=>setModal(null)} onSave={()=>{setModal(null);cargar();}} />}
       <div className="flex items-start justify-between mb-8">
         <div>
-          <p className="font-mono text-xs text-violet-400 tracking-widest uppercase mb-2">Estudiantes CRUD</p>
+          <p className="font-mono text-xs text-violet-400 tracking-widest uppercase mb-2">◎ GESTIÓN ACADÉMICA</p>
           <h1 className="text-2xl font-bold text-white">Estudiantes</h1>
-          <p className="text-white/40 text-sm mt-1">Gestiona estudiantes y sus asignaturas inscritas.</p>
+          <p className="text-white/40 text-sm mt-1">Organiza información académica y asignaturas activas.</p>
         </div>
-        <button onClick={()=>setModal("new")} className="rounded-xl bg-violet-600 hover:bg-violet-500 text-white px-4 py-2.5 text-sm font-semibold transition-all">+ Nuevo</button>
+        <button onClick={()=>setModal("new")} className="rounded-xl bg-violet-600 hover:bg-violet-500 text-white px-4 py-2.5 text-sm font-semibold transition-all">+ Nuevo Estudiante</button>
       </div>
       <input value={search} placeholder="Buscar..." onChange={(e)=>setSearch(e.target.value)}
         className="w-full mb-4 rounded-xl border border-white/10 bg-white/4 text-white px-4 py-2.5 text-sm focus:outline-none focus:border-violet-500/60 transition-all placeholder:text-white/20" />

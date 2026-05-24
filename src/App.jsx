@@ -1,14 +1,15 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import DocenteDashboard from "./pages/docente/DocenteDashboard";
 import { AuthProvider, useAuth } from "./context/AuthContext";
-import Login from "./pages/Login";
-import AdminLayout from "./pages/admin/AdminLayout";
-import Dashboard from "./pages/admin/Dashboard";
-import DocentesCRUD from "./pages/admin/DocentesCRUD";
 import EstudiantesCRUD from "./pages/admin/EstudiantesCRUD";
 import AsignaturasCRUD from "./pages/admin/AsignaturasCRUD";
+import ProgramasCRUD from "./pages/admin/ProgramasCRUD";
+import DocentesCRUD from "./pages/admin/DocentesCRUD";
+import AdminLayout from "./pages/admin/AdminLayout";
 import Comentarios from "./pages/admin/Comentarios";
-import DocenteDashboard from "./pages/docente/DocenteDashboard";
 import Evaluar from "./pages/estudiante/Evaluar";
+import Dashboard from "./pages/admin/Dashboard";
+import Login from "./pages/Login";
 
 const REDIRECCION = {
   administrativo: "/admin",
@@ -44,10 +45,11 @@ function App() {
               <AdminLayout />
             </ProtectedRoute>
           }>
-            <Route index            element={<Dashboard />} />
+            <Route index              element={<Dashboard />} />
             <Route path="docentes"    element={<DocentesCRUD />} />
             <Route path="estudiantes" element={<EstudiantesCRUD />} />
             <Route path="asignaturas" element={<AsignaturasCRUD />} />
+            <Route path="programas"   element={<ProgramasCRUD />} />
             <Route path="comentarios" element={<Comentarios />} />
           </Route>
 

@@ -3,9 +3,10 @@ import { useAuth } from "../../context/AuthContext";
 
 const links = [
   { to: "/admin",             label: "Dashboard",    icon: "◈", end: true },
-  { to: "/admin/docentes",    label: "Docentes",     icon: "◉" },
-  { to: "/admin/estudiantes", label: "Estudiantes",  icon: "◎" },
-  { to: "/admin/asignaturas", label: "Asignaturas",  icon: "◫" },
+  { to: "/admin/docentes",    label: "Académicos",   icon: "◉" },
+  { to: "/admin/estudiantes", label: "Alumnos",      icon: "◎" },
+  { to: "/admin/asignaturas", label: "Cursos ",      icon: "◫" },
+  { to: "/admin/programas",   label: "Programas",    icon: "◧" },
   { to: "/admin/comentarios", label: "Comentarios",  icon: "✦" },
 ];
 

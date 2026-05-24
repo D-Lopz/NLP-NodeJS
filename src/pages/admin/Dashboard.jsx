@@ -1,7 +1,7 @@
+import { getEstadisticas, getEvaluaciones } from "../../api/api";
+import SentimentBadge from "../../components/SentimentBadge";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import SentimentBadge from "../../components/SentimentBadge";
-import { getEstadisticas, getEvaluaciones } from "../../api/api";
 
 function StatCard({ label, value, accent, icon, loading }) {
   return (
@@ -20,10 +20,10 @@ function StatCard({ label, value, accent, icon, loading }) {
 }
 
 function Dashboard() {
-  const [stats, setStats]       = useState(null);
+  const [stats, setStats]         = useState(null);
   const [recientes, setRecientes] = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState("");
+  const [loading, setLoading]     = useState(true);
+  const [error, setError]         = useState("");
 
   useEffect(() => {
     Promise.all([getEstadisticas(), getEvaluaciones()])
@@ -36,8 +36,8 @@ function Dashboard() {
     <div className="p-8 max-w-5xl">
       <div className="mb-8">
         <p className="font-mono text-xs text-violet-400 tracking-widest uppercase mb-2">⬡ Panel principal</p>
-        <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-        <p className="text-white/40 mt-1 text-sm">Resumen general de evaluaciones con NLP.</p>
+        <h1 className="text-2xl font-bold text-white">Dashboard General</h1>
+        <p className="text-white/40 mt-1 text-sm">Resumen general de las evaluaciones analizadas con NLP.</p>
       </div>
 
       {error && (
@@ -61,7 +61,7 @@ function Dashboard() {
           </div>
           <div className="flex gap-6 mt-3 text-xs text-white/50">
             <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"/>Positivo {stats.positivos}%</span>
-            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-500  inline-block"/>Neutro {stats.neutros}%</span>
+            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-500  inline-block"/>Neutral {stats.neutros}%</span>
             <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-500   inline-block"/>Negativo {stats.negativos}%</span>
           </div>
         </div>
