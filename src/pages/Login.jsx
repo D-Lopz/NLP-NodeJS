@@ -42,7 +42,7 @@ function Login() {
     setLoading(true);
     try {
       const data = await login(form);
-      storeEmail(data.usuario.rol, form.email); // guardar email para próxima vez
+      storeEmail(rolSeleccionado, form.email);
       guardarSesion(data.usuario);
       navigate(REDIRECCION[data.usuario.rol] || "/login");
     } catch (err) {

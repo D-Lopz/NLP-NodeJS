@@ -73,9 +73,11 @@ function Comentarios() {
       <div className="rounded-xl border border-white/8 p-4 mb-6 flex items-center gap-6"
         style={{ background: "rgba(255,255,255,0.02)" }}>
         {docenteFiltrado && (
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-white truncate">{docenteFiltrado.nombre}</p>
-            {docenteFiltrado.docente?.titulo && <p className="text-xs text-white/40">{docenteFiltrado.docente.titulo}</p>}
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-white">{docenteFiltrado.nombre}</p>
+            {docenteFiltrado.docente?.titulo && (
+            <p className="text-xs text-white/40">{docenteFiltrado.docente.titulo}</p>
+          )}
           </div>
         )}
         <div className="flex gap-5 text-xs font-mono ml-auto">

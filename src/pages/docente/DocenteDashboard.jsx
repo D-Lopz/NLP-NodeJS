@@ -72,7 +72,7 @@ function DocenteDashboard() {
               className="flex items-center gap-2 px-4 py-2 rounded-xl border border-violet-500/40 text-violet-400 text-xs font-semibold hover:bg-violet-500/15 hover:border-violet-500/60 transition-all disabled:opacity-40">
               {generando
                 ? <><span className="w-3 h-3 border border-violet-400/50 border-t-violet-400 rounded-full animate-spin"/>Generando...</>
-                : <>⬇ Descargar mi reporte PDF</>}
+                : <>⬇ Reporte PDF</>}
             </button>
           )}
           <span className="text-sm text-white/50">{user?.nombre}</span>

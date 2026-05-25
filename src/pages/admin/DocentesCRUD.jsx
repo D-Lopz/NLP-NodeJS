@@ -107,7 +107,7 @@ function DocentesCRUD() {
 
       <div className="flex items-start justify-between mb-8">
         <div>
-          <p className="font-mono text-xs text-violet-400 tracking-widest uppercase mb-2">◉ Te amo mi princesa</p>
+          <p className="font-mono text-xs text-violet-400 tracking-widest uppercase mb-2">◉ Docentes</p>
           <h1 className="text-2xl font-bold text-white">Catálogo Académico</h1>
           <p className="text-white/40 text-sm mt-1">Gestiona perfiles, materias y actividad docente.</p>
         </div>
